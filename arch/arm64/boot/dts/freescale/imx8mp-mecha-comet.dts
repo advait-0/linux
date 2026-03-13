@@ -537,6 +537,27 @@
 	pinctrl-0 = <&pinctrl_i2c5>;
 	status = "okay";
 
+	/* PD controller for USB_PWR */
+	tps25751: typec@21 {
+		compatible = "ti,tps25750";
+		reg = <0x21>, <0x0f>;
+		reg-names = "main", "patch-address";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_typec>;
+		interrupt-parent = <&gpio2>;
+		interrupts = <7 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-names = "irq";
+		firmware-name = "tps25751.bin";
+
+		connector {
+		compatible = "usb-c-connector";
+			label = "USB-C";
+			self-powered;
+			data-role = "dual";
+			power-role = "dual";
+		};
+	};
+
 	ads1015@48 {
 		compatible = "ti,ads1115";
 		reg = <0x48>;
@@ -895,6 +916,12 @@
 	pinctrl_pmic: pmicgrp {
 		fsl,pins = <
 			MX8MP_IOMUXC_GPIO1_IO03__GPIO1_IO03		0x000001c0
+		>;
+	};
+
+	pinctrl_typec: typec1grp {
+		fsl,pins = <
+			MX8MP_IOMUXC_SD1_DATA5__GPIO2_IO07		0x1c4
 		>;
 	};
 
