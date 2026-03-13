@@ -123,11 +123,6 @@ static enum power_supply_property tps25750_psy_props[] = {
 	POWER_SUPPLY_PROP_CURRENT_MAX,
 };
 
-static enum power_supply_usb_type tps25750_psy_usb_types[] = {
-	POWER_SUPPLY_USB_TYPE_C,
-	POWER_SUPPLY_USB_TYPE_PD,
-};
-
 static int
 tps25750_block_write_raw(struct tps25750 *tps, const u8 *data, size_t len)
 {
@@ -857,13 +852,14 @@ static int tps25750_psy_get_prop(struct power_supply *psy,
 }
 
 static const struct power_supply_desc tps25750_psy_desc = {
-	.name = "tps25750-psy",
-	.type = POWER_SUPPLY_TYPE_USB,
-	.usb_types = tps25750_psy_usb_types,
-	.num_usb_types = ARRAY_SIZE(tps25750_psy_usb_types),
-	.properties = tps25750_psy_props,
-	.num_properties = ARRAY_SIZE(tps25750_psy_props),
-	.get_property = tps25750_psy_get_prop,
+        .name = "tps25750",
+        .type = POWER_SUPPLY_TYPE_USB,
+        .properties = tps25750_psy_props,
+        .num_properties = ARRAY_SIZE(tps25750_psy_props),
+        .get_property = tps25750_psy_get_prop,
+        .usb_types =
+                BIT(POWER_SUPPLY_USB_TYPE_C) |
+                BIT(POWER_SUPPLY_USB_TYPE_PD),
 };
 
 static const struct typec_operations tps25750_ops = {
