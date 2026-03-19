@@ -143,19 +143,6 @@
 		};
 	};
 
-	usb_pwr_mux: ptn36043_2 {
-		compatible = "nxp,ptn36043";
-		pinctrl-names = "default";
-		switch-gpios = <&gpio4 1 GPIO_ACTIVE_LOW>;
-		orientation-switch;
-
-		port {
-			usb_pwr_sw_ep: endpoint {
-				remote-endpoint = <&usb_pwr_sw_ss>;
-			};
-		};
-	};
-
 	Home-button {
 		compatible = "gpio-keys";
 
@@ -224,17 +211,6 @@
 
 &usb3_phy0 {
 	status = "okay";
-};
-
-&usb_dwc3_0 {
-	status = "okay";
-	dr_mode = "otg";
-	usb-role-switch;
-	port {
-		usb0_pwr_ep: endpoint {
-			remote-endpoint = <&usb_pwr_ep>;
-		};
-	};
 };
 
 &usb3_phy1 {
@@ -398,6 +374,36 @@
 	pinctrl-0 = <&pinctrl_i2c3>;
 	status = "okay";
 
+	imx219: imx219@10 {
+		compatible = "sony,imx219";
+		reg = <0x10>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_gpio_mclk>, <&pinctrl_gpio5>;
+		clock-names = "xclk";
+		clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO1>;
+		assigned-clocks = <&clk IMX8MP_CLK_IPP_DO_CLKO1>;
+		assigned-clock-parents = <&clk IMX8MP_CLK_24M>;
+		assigned-clock-rates = <24000000>;
+		reset-gpios = <&gpio3 14 GPIO_ACTIVE_HIGH>;
+
+		rotation = <0>;
+		orientation = <2>;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+			port@0 {
+				reg = <0>;
+				imx219_out: endpoint {
+					remote-endpoint = <&mipi_csi_0_in>;
+					clock-noncontinuous;
+					data-lanes = <1 2>;
+					link-frequencies = /bits/ 64 <456000000>;
+				};
+			};
+		};
+	};
+
 	imu: icm42605@69 {
 		compatible = "invensense,icm42605";
 		pinctrl-names = "default";
@@ -474,6 +480,55 @@
 		};
 	};
 
+};
+
+&mipi_csi_0 {
+    status = "okay";
+	fsl,blk-ctrl = <&media_blk_ctrl>;
+
+    ports {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        /* input from sensor */
+        port@0 {
+            mipi_csi_0_in: endpoint {
+                remote-endpoint = <&imx219_out>;
+                data-lanes = <1 2>;
+                clock-lanes = <0>;
+            };
+        };
+
+        /* output to ISP */
+        port@1 {
+            mipi_csi_0_out: endpoint {
+                remote-endpoint = <&isp0_in>;
+            };
+        };
+    };
+};
+
+&isp_0 {
+	status = "okay";
+
+	ports {
+		port@1 {
+			isp0_in: endpoint {
+				bus-type = <5>;
+				remote-endpoint = <&mipi_csi_0_out>;
+			};
+		};
+	};
+};
+
+&isi_0 {
+	status = "disabled";
+
+	ports {
+		port@0 {
+			/delete-node/ endpoint;
+		};
+	};
 };
 
 &i2c4 {
@@ -563,45 +618,6 @@
 		reg = <0x48>;
 		#address-cells = <1>;
 		#size-cells = <0>;
-	};
-
-	tps25751: typec@21 {
-		compatible = "ti,tps25750";
-		reg = <0x21>, <0x0f>;
-		reg-names = "main", "patch-address";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_typec>;
-		interrupt-parent = <&gpio4>;
-		interrupts = <3 IRQ_TYPE_LEVEL_LOW>;
-		interrupt-names = "irq";
-		firmware-name = "tps25751.bin";
-		status = "okay";
-		
-		connector {
-			compatible = "usb-c-connector";
-			label = "USB-C";
-			self-powered;
-			data-role = "dual";
-			power-role = "dual";
-			ports {
-				#address-cells = <1>;
-				#size-cells = <0>;
-
-				port@0 {
-					reg = <0>;
-					usb_pwr_ep: endpoint {
-						remote-endpoint = <&usb0_pwr_ep>;
-					};
-				};
-
-				port@1 {
-					reg = <1>;
-					usb_pwr_sw_ss: endpoint {
-						remote-endpoint = <&usb_pwr_sw_ep>;
-					};
-				};
-			};
-		};
 	};
 
 };
@@ -746,7 +762,7 @@
 };
 
 &lcdif1 {
-	status = "okay";
+	status = "disabled";
 };
 
 &lcdif2 {
@@ -754,7 +770,7 @@
 };
 
 &lcdif3 {
-        status = "okay";
+        status = "disabled";
 
         thres-low  = <1 2>;             /* (FIFO * 1 / 2) */
         thres-high = <3 4>;             /* (FIFO * 3 / 4) */
@@ -762,7 +778,7 @@
 
 &mipi_dsi {
 	samsung,esc-clock-frequency = <16000000>;
-	status = "okay";
+	status = "disabled";
 
 	port {
 		dsi_out: endpoint {
@@ -823,6 +839,17 @@
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_hog>;
+
+	pinctrl_gpio_mclk: gpiomclkgrp {
+		fsl,pins =
+				/* CSI_1_MCLK */
+				<MX8MP_IOMUXC_GPIO1_IO14__CCM_CLKO1             0x1c4>;
+	};
+
+	pinctrl_gpio5: gpio5grp {
+		fsl,pins =
+				<MX8MP_IOMUXC_NAND_ALE__GPIO3_IO00            0x184>;
+	};
 
 	pinctrl_i2c1: i2c1grp {
 		fsl,pins = <
