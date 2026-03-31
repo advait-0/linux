@@ -8,6 +8,7 @@
 #include <dt-bindings/phy/phy-imx8-pcie.h>
 #include <dt-bindings/pwm/pwm.h>
 #include <dt-bindings/usb/pd.h>
+#include <dt-bindings/clock/imx8mp-clock.h>
 #include "imx8mp.dtsi"
 
 / {
@@ -79,8 +80,8 @@
 	                "IN1", "MICBIAS",
 	                "MIC1","IN1",
 	                "MIC2","IN1",
-	                //"Speakers", "SPKL",
-	                //"Speakers", "SPKR",
+	                "Speakers", "SPKL",
+	                "Speakers", "SPKR",
 
 	                /* DMIC-3 Routings */
 	                "DMICL", "DMIC Mux",
@@ -106,7 +107,6 @@
 
 	        simple-audio-card,codec {
 	                sound-dai = <&max98090>;
-	                clocks = <&audio_blk_ctrl IMX8MP_CLK_AUDIOMIX_SAI3_MCLK1>;
 	        };
 	};
 
@@ -542,8 +542,7 @@
 	max98090: max98090@10 {
 	        #sound-dai-cells = <0>;
 	        pinctrl-names = "default";
-	        pinctrl-0 = <&pinctrl_sai3>;
-			pinctrl-1 = <&pinctrl_codec>;
+			pinctrl-0 = <&pinctrl_codec>;
 	        compatible = "maxim,max98091";
 	        reg = <0x10>;
 	        clocks = <&audio_blk_ctrl IMX8MP_CLK_AUDIOMIX_SAI3_MCLK1>;
@@ -822,12 +821,24 @@
 };
 
 &sai3 {
-	#sound-dai-cells = <0>;
-	assigned-clocks = <&clk IMX8MP_CLK_SAI3>;
-	assigned-clock-parents = <&clk IMX8MP_AUDIO_PLL1_OUT>;
-	assigned-clock-rates = <12288000>;
-	fsl,sai-mclk-direction-output;
-	status = "okay";
+    pinctrl-names = "default";
+    pinctrl-0 = <&pinctrl_sai3>;
+    clocks = <&audio_blk_ctrl IMX8MP_CLK_AUDIOMIX_SAI3_IPG>,
+             <&clk IMX8MP_CLK_DUMMY>,
+             <&audio_blk_ctrl IMX8MP_CLK_AUDIOMIX_SAI3_MCLK1>,
+             <&clk IMX8MP_CLK_DUMMY>,
+             <&clk IMX8MP_CLK_DUMMY>,
+             <&clk IMX8MP_AUDIO_PLL1_OUT>,
+             <&clk IMX8MP_AUDIO_PLL2_OUT>;
+    clock-names = "bus", "mclk0", "mclk1", "mclk2", "mclk3",
+                  "pll8k", "pll11k";
+
+    assigned-clocks = <&clk IMX8MP_CLK_SAI3>;
+    assigned-clock-parents = <&clk IMX8MP_AUDIO_PLL1_OUT>;
+    assigned-clock-rates = <12288000>;
+
+    fsl,sai-mclk-direction-output;
+    status = "okay";
 };
 
 &sdma2 {
