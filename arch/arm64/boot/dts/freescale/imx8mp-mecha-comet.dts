@@ -376,6 +376,14 @@
 	pinctrl-0 = <&pinctrl_i2c3>;
 	status = "okay";
 
+	opt: opt3001@44 {
+        compatible = "ti,opt3001";
+        reg = <0x44>;
+        interrupt-parent = <&gpio4>;
+        interrupts = <11 IRQ_TYPE_EDGE_RISING>;
+        status = "okay";
+    };
+
 	magnetometer@1e {
 		compatible = "st,lis2mdl";
 		reg = <0x1e>;
