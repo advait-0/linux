@@ -1818,6 +1818,7 @@
 			nxp,disp-master-csr = <&display_master_csr>;
 			nxp,disp-stream-csr = <&display_stream_csr>;
 			nxp,mipi-combo-phy-csr = <&mipi_tx_phy_csr>;
+			nxp,mipi-csi = <&mipi_csi1>;
 			status = "disabled";
 
 			ports {
@@ -1869,6 +1870,16 @@
 		mipi_tx_phy_csr: syscon@4ad20100 {
 			compatible = "fsl,imx95-mipi-tx-phy-csr", "syscon";
 			reg = <0x0 0x4ad20100 0x0 0x14>;
+			clocks = <&scmi_clk IMX95_CLK_CAMAPB>;
+		};
+
+		/*
+		TODO: add proper MIPI CSI node
+		Dummy MIPI CSI node to satisfy DSI DRIVER
+		*/
+		mipi_csi1: syscon@4ad40000 {
+			compatible = "syscon";
+			reg = <0x0 0x4ad40000 0x0 0x10000>;
 			clocks = <&scmi_clk IMX95_CLK_CAMAPB>;
 		};
 
