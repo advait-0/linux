@@ -120,29 +120,31 @@ static int ch13726a_unprepare(struct drm_panel *panel)
 }
 
 static const struct drm_display_mode rpmini_display_mode = {
-    	.clock = (1080 + 28 + 4 + 36) *
-    		 (1240 + 16 + 4 + 8) * 60 / 1000,
-    	.hdisplay = 1080,
-    	.hsync_start = 1080 + 28,
-    	.hsync_end = 1080 + 28 + 4,
-    	.htotal = 1080 + 28 + 4 + 36,
-    	.vdisplay = 1240,
-    	.vsync_start = 1240 + 16,
-    	.vsync_end = 1240 + 16 + 4,
-    	.vtotal = 1240 + 16 + 4 + 8,
+	.clock = 80000,		/* 480 MHz / 6, ~59.5 Hz */
+	.hdisplay = 960,
+	.hsync_start = 960 + 28,
+	.hsync_end = 960 + 28 + 4,
+	.htotal = 960 + 28 + 4 + 36,
+	.vdisplay = 1280,
+	.vsync_start = 1280 + 16,
+	.vsync_end = 1280 + 16 + 4,
+	.vtotal = 1280 + 16 + 4 + 8,
+	.width_mm = 65,
+	.height_mm = 75,
 };
 
 static const struct drm_display_mode rp5_display_mode = {
-    	.clock = (1080 + 28 + 4 + 36) *
-    		 (1240 + 16 + 4 + 8) * 60 / 1000,
-    	.hdisplay = 1080,
-    	.hsync_start = 1080 + 28,
-    	.hsync_end = 1080 + 28 + 4,
-    	.htotal = 1080 + 28 + 4 + 36,
-    	.vdisplay = 1240,
-    	.vsync_start = 1240 + 16,
-    	.vsync_end = 1240 + 16 + 4,
-    	.vtotal = 1240 + 16 + 4 + 8,
+	.clock = 120000,	/* 480 MHz / 4, ~60.2 Hz */
+	.hdisplay = 1080,
+	.hsync_start = 1080 + 80,
+	.hsync_end = 1080 + 80 + 80,
+	.htotal = 1080 + 80 + 80 + 80,
+	.vdisplay = 1240,
+	.vsync_start = 1240 + 90,
+	.vsync_end = 1240 + 90 + 90,
+	.vtotal = 1240 + 90 + 90 + 90,
+	.width_mm = 65,
+	.height_mm = 75,
 };
 
 

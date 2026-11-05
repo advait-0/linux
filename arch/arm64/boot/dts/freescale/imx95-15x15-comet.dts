@@ -248,13 +248,17 @@
 	status = "okay";
 };
 
+&gpu {
+	status="disabled";
+};
+
 &dpu {
 	status = "okay";
 	assigned-clocks = <&scmi_clk IMX95_CLK_DISP1PIX>,
 			  <&scmi_clk IMX95_CLK_VIDEOPLL1_VCO>,
 			  <&scmi_clk IMX95_CLK_VIDEOPLL1>;
 	assigned-clock-parents = <&scmi_clk IMX95_CLK_VIDEOPLL1>;
-	assigned-clock-rates = <3840000000>, <480000000>, <120000000>;
+	assigned-clock-rates = <120000000>, <3840000000>, <480000000>;
 };
 
 &display_pixel_link {
@@ -301,11 +305,18 @@
 };
 
 &pixel_interleaver {
+	#address-cells = <1>;
+	#size-cells = <0>;
 	status = "okay";
 
-	channel@1 {
+	channel@0 {
+		reg = <0>;
 		status = "okay";
 	};
+};
+
+&ldb {
+	status="disabled";
 };
 
 &ldb1_phy {
